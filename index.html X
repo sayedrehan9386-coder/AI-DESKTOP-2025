@@ -1,0 +1,2466 @@
+<s>search<s\><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdaptLearn - Adaptive Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .quiz-option { transition: all 0.2s ease; }
+        .quiz-option:hover { background-color: #f3f4f6; }
+        .quiz-option.selected { background-color: #dbeafe; border-color: #3b82f6; }
+        .quiz-option.correct { background-color: #dcfce7; border-color: #16a34a; }
+        .quiz-option.incorrect { background-color: #fee2e2; border-color: #dc2626; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold">🧠 AdaptLearn</div>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="showSection('dashboard')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Dashboard</button>
+                    <button onclick="showSection('upload')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Upload Materials</button>
+                    <button onclick="showSection('study')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Study Tools</button>
+                    <button onclick="showSection('analytics')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Analytics</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">Welcome back! Ready to learn?</h1>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">📚</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Study Materials</p>
+                            <p class="text-2xl font-bold text-gray-900" id="materialCount">12</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">🎯</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Quizzes Completed</p>
+                            <p class="text-2xl font-bold text-gray-900" id="quizCount">28</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">⚡</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Study Streak</p>
+                            <p class="text-2xl font-bold text-gray-900" id="streakCount">7 days</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">📈</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Average Score</p>
+                            <p class="text-2xl font-bold text-gray-900" id="avgScore">85%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Recommendations -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">🤖 AI Study Recommendations</h2>
+                <div class="space-y-4" id="recommendations">
+                    <div class="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="text-2xl mr-4">🔬</div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">Focus on Chemistry - Organic Compounds</h3>
+                            <p class="text-sm text-gray-600">Your recent quiz showed 65% accuracy. Recommended study time: 30 minutes</p>
+                        </div>
+                        <button onclick="startRecommendedStudy('chemistry')" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">Start Study</button>
+                    </div>
+                    <div class="flex items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                        <div class="text-2xl mr-4">📐</div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">Review Mathematics - Calculus Integration</h3>
+                            <p class="text-sm text-gray-600">Great progress! Quick review recommended to maintain mastery</p>
+                        </div>
+                        <button onclick="startRecommendedStudy('math')" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">Quick Review</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">📋 Recent Activity</h2>
+                <div class="space-y-3" id="recentActivity">
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div class="flex items-center">
+                            <div class="text-lg mr-3">✅</div>
+                            <div>
+                                <p class="font-medium text-gray-900">Completed Biology Quiz - Cell Structure</p>
+                                <p class="text-sm text-gray-600">2 hours ago • Score: 92%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div class="flex items-center">
+                            <div class="text-lg mr-3">📖</div>
+                            <div>
+                                <p class="font-medium text-gray-900">Uploaded Physics Notes - Thermodynamics</p>
+                                <p class="text-sm text-gray-600">1 day ago • 15 pages processed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2">
+                        <div class="flex items-center">
+                            <div class="text-lg mr-3">🎯</div>
+                            <div>
+                                <p class="font-medium text-gray-900">Generated Chemistry Quiz</p>
+                                <p class="text-sm text-gray-600">2 days ago • 10 questions created</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Materials Section -->
+    <div id="upload" class="section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">📚 Upload Study Materials</h1>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Add New Materials</h2>
+                
+                <!-- File Upload Area -->
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                    <div class="text-6xl mb-4">📄</div>
+                    <p class="text-lg font-medium text-gray-900 mb-2">Drop files here or click to upload</p>
+                    <p class="text-sm text-gray-600">Supports PDF, DOCX, TXT, and image files</p>
+                    <input type="file" id="fileInput" class="hidden" multiple accept=".pdf,.docx,.txt,.jpg,.jpeg,.png" onchange="handleFileUpload(event)">
+                </div>
+
+                <!-- Processing Options -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-900 mb-2">📝 Content Extraction</h3>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Extract key concepts
+                        </label>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Identify important terms
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" checked> Create summary notes
+                        </label>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-900 mb-2">🎯 Auto-Generate</h3>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Practice quizzes
+                        </label>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Flashcards
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2"> Study schedule
+                        </label>
+                    </div>
+                </div>
+
+                <button onclick="processUploadedFiles()" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium">
+                    Process Materials
+                </button>
+            </div>
+
+            <!-- Uploaded Materials List -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">📋 Your Materials</h2>
+                <div class="space-y-3" id="materialsList">
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="text-2xl mr-4">📘</div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Biology Textbook - Chapter 5</h3>
+                                <p class="text-sm text-gray-600">Uploaded 2 days ago • 25 pages • 3 quizzes generated</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="viewMaterial('bio-ch5')" class="text-blue-600 hover:text-blue-800">View</button>
+                            <button onclick="generateQuiz('bio-ch5')" class="text-green-600 hover:text-green-800">Quiz</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="text-2xl mr-4">🧪</div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Chemistry Lab Notes</h3>
+                                <p class="text-sm text-gray-600">Uploaded 1 week ago • 12 pages • 2 quizzes generated</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="viewMaterial('chem-lab')" class="text-blue-600 hover:text-blue-800">View</button>
+                            <button onclick="generateQuiz('chem-lab')" class="text-green-600 hover:text-green-800">Quiz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Tools Section -->
+    <div id="study" class="section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">🎯 Study Tools</h1>
+            
+            <!-- Study Mode Selection -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="startQuizMode()">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🧠</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Adaptive Quiz</h3>
+                        <p class="text-sm text-gray-600">AI-generated questions based on your progress</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="startFlashcards()">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🃏</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Flashcards</h3>
+                        <p class="text-sm text-gray-600">Review key concepts and definitions</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="startSummaryReview()">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">📝</div>
+                        <h3 class="text-lg font-semibnel text-gray-900 mb-2">Summary Review</h3>
+                        <p class="text-sm text-gray-600">Quick overview of important topics</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Interface -->
+            <div id="quizInterface" class="bg-white rounded-lg shadow-md p-6 hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">Adaptive Quiz - Biology</h2>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span></span>
+                        <div class="w-32 bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" id="quizProgress" style="width: 10%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="questionContainer">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4" id="questionText">What is the primary function of mitochondria in a cell?</h3>
+                    <div class="space-y-3" id="optionsContainer">
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(0)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="0">
+                                Protein synthesis
+                            </label>
+                        </div>
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(1)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="1">
+                                Energy production (ATP synthesis)
+                            </label>
+                        </div>
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(2)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="2">
+                                DNA replication
+                            </label>
+                        </div>
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(3)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="3">
+                                Waste removal
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-6">
+                    <button onclick="previousQuestion()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors" id="prevBtn" disabled>Previous</button>
+                    <button onclick="nextQuestion()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors" id="nextBtn">Next Question</button>
+                </div>
+
+                <div id="explanationContainer" class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+                    <h4 class="font-semibold text-blue-900 mb-2">Explanation:</h4>
+                    <p class="text-blue-800" id="explanationText"></p>
+                </div>
+            </div>
+
+            <!-- Quiz Results -->
+            <div id="quizResults" class="bg-white rounded-lg shadow-md p-6 hidden">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🎉</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Quiz Complete!</h2>
+                    <div class="text-4xl font-bold text-blue-600 mb-2" id="finalScore">85%</div>
+                    <p class="text-gray-600 mb-6">Great job! You're making excellent progress.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="text-2xl text-green-600 mb-2">✅</div>
+                            <div class="text-lg font-semibold text-green-800" id="correctAnswers">8</div>
+                            <div class="text-sm text-green-600">Correct</div>
+                        </div>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="text-2xl text-red-600 mb-2">❌</div>
+                            <div class="text-lg font-semibold text-red-800" id="incorrectAnswers">2</div>
+                            <div class="text-sm text-red-600">Incorrect</div>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="text-2xl text-blue-600 mb-2">⏱️</div>
+                            <div class="text-lg font-semibold text-blue-800" id="timeSpent">5:32</div>
+                            <div class="text-sm text-blue-600">Time</div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center space-x-4">
+                        <button onclick="retakeQuiz()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">Retake Quiz</button>
+                        <button onclick="reviewAnswers()" class="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors">Review Answers</button>
+                        <button onclick="showSection('dashboard')" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors">Back to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div id="analytics" class="section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">📊 Learning Analytics</h1>
+            
+            <!-- Performance Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📈 Performance Trends</h2>
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📚 Subject Breakdown</h2>
+                    <canvas id="subjectChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Study Hours</p>
+                            <p class="text-2xl font-bold text-gray-900">42.5</p>
+                            <p class="text-xs text-green-600">+12% this week</p>
+                        </div>
+                        <div class="text-3xl">⏰</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Accuracy Rate</p>
+                            <p class="text-2xl font-bold text-gray-900">87%</p>
+                            <p class="text-xs text-green-600">+5% improvement</p>
+                        </div>
+                        <div class="text-3xl">🎯</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Topics Mastered</p>
+                            <p class="text-2xl font-bold text-gray-900">23</p>
+                            <p class="text-xs text-blue-600">3 new this week</p>
+                        </div>
+                        <div class="text-3xl">🏆</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Learning Velocity</p>
+                            <p class="text-2xl font-bold text-gray-900">Fast</p>
+                            <p class="text-xs text-green-600">Above average</p>
+                        </div>
+                        <div class="text-3xl">⚡</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Progress -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">📖 Subject Progress</h2>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Biology</span>
+                            <span class="text-sm text-gray-500">92%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-600 h-2 rounded-full progress-bar" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Chemistry</span>
+                            <span class="text-sm text-gray-500">78%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" style="width: 78%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Mathematics</span>
+                            <span class="text-sm text-gray-500">85%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-600 h-2 rounded-full progress-bar" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Physics</span>
+                            <span class="text-sm text-gray-500">65%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-600 h-2 rounded-full progress-bar" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Insights -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">💡 Learning Insights</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Peak Learning Time</h3>
+                        <p class="text-gray-600">You perform best between 2-4 PM with 94% average accuracy</p>
+                    </div>
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Strongest Subject</h3>
+                        <p class="text-gray-600">Biology shows consistent high performance across all topics</p>
+                    </div>
+                    <div class="border-l-4 border-yellow-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Improvement Area</h3>
+                        <p class="text-gray-600">Physics concepts need more practice - focus on mechanics</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Study Pattern</h3>
+                        <p class="text-gray-600">Short, frequent sessions (20-30 min) work best for you</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentSection = 'dashboard';
+        let currentQuestionIndex = 0;
+        let quizData = [];
+        let userAnswers = [];
+        let quizStartTime = null;
+
+        // Sample quiz data
+        const sampleQuizData = [
+            {
+                question: "What is the primary function of mitochondria in a cell?",
+                options: ["Protein synthesis", "Energy production (ATP synthesis)", "DNA replication", "Waste removal"],
+                correct: 1,
+                explanation: "Mitochondria are known as the powerhouses of the cell because they produce ATP through cellular respiration."
+            },
+            {
+                question: "Which process converts glucose into pyruvate?",
+                options: ["Krebs cycle", "Glycolysis", "Electron transport chain", "Photosynthesis"],
+                correct: 1,
+                explanation: "Glycolysis is the metabolic pathway that converts glucose into pyruvate, releasing energy in the process."
+            },
+            {
+                question: "What is the basic unit of heredity?",
+                options: ["Chromosome", "Gene", "DNA", "RNA"],
+                correct: 1,
+                explanation: "A gene is the basic unit of heredity, containing the instructions for making proteins."
+            }
+        ];
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.remove('hidden');
+            currentSection = sectionName;
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'bg-opacity-20');
+            });
+            event.target.classList.add('bg-white', 'bg-opacity-20');
+
+            // Initialize section-specific content
+            if (sectionName === 'analytics') {
+                setTimeout(initializeCharts, 100);
+            }
+        }
+
+        // File upload handling
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                showUploadProgress(files);
+            }
+        }
+
+        function showUploadProgress(files) {
+            const fileList = Array.from(files).map(file => `
+                <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="text-lg mr-3">📄</div>
+                        <div>
+                            <p class="font-medium text-gray-900">${file.name}</p>
+                            <p class="text-sm text-gray-600">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        </div>
+                    </div>
+                    <div class="text-green-600">✅ Ready</div>
+                </div>
+            `).join('');
+
+            const uploadArea = document.querySelector('.border-dashed');
+            uploadArea.innerHTML = `
+                <div class="text-4xl mb-4">📚</div>
+                <p class="text-lg font-medium text-gray-900 mb-4">${files.length} file(s) selected</p>
+                <div class="space-y-2 mb-4">${fileList}</div>
+                <button onclick="document.getElementById('fileInput').click()" class="text-blue-600 hover:text-blue-800">Add more files</button>
+            `;
+        }
+
+        function processUploadedFiles() {
+            // Simulate file processing
+            const processingModal = document.createElement('div');
+            processingModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            processingModal.innerHTML = `
+                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🔄</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Processing Materials...</h3>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" id="processingProgress" style="width: 0%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600" id="processingStatus">Extracting text content...</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(processingModal);
+
+            // Simulate processing steps
+            const steps = [
+                { progress: 20, status: "Extracting text content..." },
+                { progress: 40, status: "Identifying key concepts..." },
+                { progress: 60, status: "Generating quiz questions..." },
+                { progress: 80, status: "Creating flashcards..." },
+                { progress: 100, status: "Processing complete!" }
+            ];
+
+            let stepIndex = 0;
+            const processInterval = setInterval(() => {
+                if (stepIndex < steps.length) {
+                    const step = steps[stepIndex];
+                    document.getElementById('processingProgress').style.width = step.progress + '%';
+                    document.getElementById('processingStatus').textContent = step.status;
+                    stepIndex++;
+                } else {
+                    clearInterval(processInterval);
+                    setTimeout(() => {
+                        document.body.removeChild(processingModal);
+                        showSuccessMessage();
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        function showSuccessMessage() {
+            const successModal = document.createElement('div');
+            successModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            successModal.innerHTML = `
+                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">✅</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Materials Processed Successfully!</h3>
+                        <p class="text-gray-600 mb-6">Generated 8 quiz questions, 15 flashcards, and extracted 23 key concepts.</p>
+                        <button onclick="document.body.removeChild(this.closest('.fixed'))" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">Continue</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(successModal);
+        }
+
+        // Study tools
+        function startQuizMode() {
+            quizData = [...sampleQuizData];
+            userAnswers = new Array(quizData.length).fill(null);
+            currentQuestionIndex = 0;
+            quizStartTime = new Date();
+            
+            document.getElementById('quizInterface').classList.remove('hidden');
+            document.getElementById('quizResults').classList.add('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const question = quizData[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = quizData.length;
+            
+            const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            document.getElementById('quizProgress').style.width = progress + '%';
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = question.options.map((option, index) => `
+                <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(${index})">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="answer" class="mr-3" value="${index}">
+                        ${option}
+                    </label>
+                </div>
+            `).join('');
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('nextBtn').textContent = currentQuestionIndex === quizData.length - 1 ? 'Finish Quiz' : 'Next Question';
+            
+            // Hide explanation
+            document.getElementById('explanationContainer').classList.add('hidden');
+            
+            // Restore previous answer if exists
+            if (userAnswers[currentQuestionIndex] !== null) {
+                selectOption(userAnswers[currentQuestionIndex]);
+            }
+        }
+
+        function selectOption(optionIndex) {
+            // Clear previous selections
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected');
+                option.querySelector('input').checked = false;
+            });
+            
+            // Select current option
+            const selectedOption = document.querySelectorAll('.quiz-option')[optionIndex];
+            selectedOption.classList.add('selected');
+            selectedOption.querySelector('input').checked = true;
+            
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Show explanation after selection
+            setTimeout(() => {
+                showExplanation();
+            }, 500);
+        }
+
+        function showExplanation() {
+            const question = quizData[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            
+            // Highlight correct/incorrect answers
+            document.querySelectorAll('.quiz-option').forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === userAnswer && index !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Show explanation
+            document.getElementById('explanationText').textContent = question.explanation;
+            document.getElementById('explanationContainer').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            const correctAnswers = userAnswers.reduce((count, answer, index) => {
+                return count + (answer === quizData[index].correct ? 1 : 0);
+            }, 0);
+            
+            const score = Math.round((correctAnswers / quizData.length) * 100);
+            const timeSpent = Math.floor((new Date() - quizStartTime) / 1000);
+            const minutes = Math.floor(timeSpent / 60);
+            const seconds = timeSpent % 60;
+            
+            document.getElementById('finalScore').textContent = score + '%';
+            document.getElementById('correctAnswers').textContent = correctAnswers;
+            document.getElementById('incorrectAnswers').textContent = quizData.length - correctAnswers;
+            document.getElementById('timeSpent').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('quizResults').classList.remove('hidden');
+        }
+
+        function retakeQuiz() {
+            startQuizMode();
+        }
+
+        function reviewAnswers() {
+            // Implementation for reviewing answers
+            alert('Review functionality would show detailed breakdown of each question and answer.');
+        }
+
+        function startFlashcards() {
+            alert('Flashcard mode would display interactive cards with key concepts and definitions.');
+        }
+
+        function startSummaryReview() {
+            alert('Summary review would show condensed notes and key points from your materials.');
+        }
+
+        function startRecommendedStudy(subject) {
+            alert(`Starting recommended study session for ${subject}. This would launch targeted practice based on your weak areas.`);
+        }
+
+        // Analytics charts
+        function initializeCharts() {
+            // Performance trend chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                    datasets: [{
+                        label: 'Quiz Scores (%)',
+                        data: [65, 72, 78, 85, 82, 87],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Subject breakdown chart
+            const subjectCtx = document.getElementById('subjectChart').getContext('2d');
+            new Chart(subjectCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Biology', 'Chemistry', 'Mathematics', 'Physics'],
+                    datasets: [{
+                        data: [92, 78, 85, 65],
+                        backgroundColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(59, 130, 246)',
+                            'rgb(147, 51, 234)',
+                            'rgb(249, 115, 22)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e570ee35679f4d',t:'MTc1Nzc0MzQwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdaptLearn - Adaptive Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .quiz-option { transition: all 0.2s ease; }
+        .quiz-option:hover { background-color: #f3f4f6; }
+        .quiz-option.selected { background-color: #dbeafe; border-color: #3b82f6; }
+        .quiz-option.correct { background-color: #dcfce7; border-color: #16a34a; }
+        .quiz-option.incorrect { background-color: #fee2e2; border-color: #dc2626; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold">🧠 AdaptLearn</div>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="showSection('dashboard')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Dashboard</button>
+                    <button onclick="showSection('upload')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Upload Materials</button>
+                    <button onclick="showSection('study')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Study Tools</button>
+                    <button onclick="showSection('analytics')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Analytics</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">Welcome back! Ready to learn?</h1>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">📚</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Study Materials</p>
+                            <p class="text-2xl font-bold text-gray-900" id="materialCount">12</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">🎯</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Quizzes Completed</p>
+                            <p class="text-2xl font-bold text-gray-900" id="quizCount">28</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">⚡</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Study Streak</p>
+                            <p class="text-2xl font-bold text-gray-900" id="streakCount">7 days</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">📈</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Average Score</p>
+                            <p class="text-2xl font-bold text-gray-900" id="avgScore">85%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Recommendations -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">🤖 AI Study Recommendations</h2>
+                <div class="space-y-4" id="recommendations">
+                    <div class="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="text-2xl mr-4">🔬</div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">Focus on Chemistry - Organic Compounds</h3>
+                            <p class="text-sm text-gray-600">Your recent quiz showed 65% accuracy. Recommended study time: 30 minutes</p>
+                        </div>
+                        <button onclick="startRecommendedStudy('chemistry')" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">Start Study</button>
+                    </div>
+                    <div class="flex items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                        <div class="text-2xl mr-4">📐</div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">Review Mathematics - Calculus Integration</h3>
+                            <p class="text-sm text-gray-600">Great progress! Quick review recommended to maintain mastery</p>
+                        </div>
+                        <button onclick="startRecommendedStudy('math')" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">Quick Review</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">📋 Recent Activity</h2>
+                <div class="space-y-3" id="recentActivity">
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div class="flex items-center">
+                            <div class="text-lg mr-3">✅</div>
+                            <div>
+                                <p class="font-medium text-gray-900">Completed Biology Quiz - Cell Structure</p>
+                                <p class="text-sm text-gray-600">2 hours ago • Score: 92%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div class="flex items-center">
+                            <div class="text-lg mr-3">📖</div>
+                            <div>
+                                <p class="font-medium text-gray-900">Uploaded Physics Notes - Thermodynamics</p>
+                                <p class="text-sm text-gray-600">1 day ago • 15 pages processed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2">
+                        <div class="flex items-center">
+                            <div class="text-lg mr-3">🎯</div>
+                            <div>
+                                <p class="font-medium text-gray-900">Generated Chemistry Quiz</p>
+                                <p class="text-sm text-gray-600">2 days ago • 10 questions created</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Materials Section -->
+    <div id="upload" class="section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">📚 Upload Study Materials</h1>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Add New Materials</h2>
+                
+                <!-- File Upload Area -->
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                    <div class="text-6xl mb-4">📄</div>
+                    <p class="text-lg font-medium text-gray-900 mb-2">Drop files here or click to upload</p>
+                    <p class="text-sm text-gray-600">Supports PDF, DOCX, TXT, and image files</p>
+                    <input type="file" id="fileInput" class="hidden" multiple accept=".pdf,.docx,.txt,.jpg,.jpeg,.png" onchange="handleFileUpload(event)">
+                </div>
+
+                <!-- Processing Options -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-900 mb-2">📝 Content Extraction</h3>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Extract key concepts
+                        </label>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Identify important terms
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" checked> Create summary notes
+                        </label>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-900 mb-2">🎯 Auto-Generate</h3>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Practice quizzes
+                        </label>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Flashcards
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2"> Study schedule
+                        </label>
+                    </div>
+                </div>
+
+                <button onclick="processUploadedFiles()" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium">
+                    Process Materials
+                </button>
+            </div>
+
+            <!-- Uploaded Materials List -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">📋 Your Materials</h2>
+                <div class="space-y-3" id="materialsList">
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="text-2xl mr-4">📘</div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Biology Textbook - Chapter 5</h3>
+                                <p class="text-sm text-gray-600">Uploaded 2 days ago • 25 pages • 3 quizzes generated</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="viewMaterial('bio-ch5')" class="text-blue-600 hover:text-blue-800">View</button>
+                            <button onclick="generateQuiz('bio-ch5')" class="text-green-600 hover:text-green-800">Quiz</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="text-2xl mr-4">🧪</div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Chemistry Lab Notes</h3>
+                                <p class="text-sm text-gray-600">Uploaded 1 week ago • 12 pages • 2 quizzes generated</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="viewMaterial('chem-lab')" class="text-blue-600 hover:text-blue-800">View</button>
+                            <button onclick="generateQuiz('chem-lab')" class="text-green-600 hover:text-green-800">Quiz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Tools Section -->
+    <div id="study" class="section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">🎯 Study Tools</h1>
+            
+            <!-- Study Mode Selection -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="startQuizMode()">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🧠</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Adaptive Quiz</h3>
+                        <p class="text-sm text-gray-600">AI-generated questions based on your progress</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="startFlashcards()">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🃏</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Flashcards</h3>
+                        <p class="text-sm text-gray-600">Review key concepts and definitions</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="startSummaryReview()">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">📝</div>
+                        <h3 class="text-lg font-semibnel text-gray-900 mb-2">Summary Review</h3>
+                        <p class="text-sm text-gray-600">Quick overview of important topics</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Interface -->
+            <div id="quizInterface" class="bg-white rounded-lg shadow-md p-6 hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">Adaptive Quiz - Biology</h2>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span></span>
+                        <div class="w-32 bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" id="quizProgress" style="width: 10%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="questionContainer">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4" id="questionText">What is the primary function of mitochondria in a cell?</h3>
+                    <div class="space-y-3" id="optionsContainer">
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(0)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="0">
+                                Protein synthesis
+                            </label>
+                        </div>
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(1)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="1">
+                                Energy production (ATP synthesis)
+                            </label>
+                        </div>
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(2)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="2">
+                                DNA replication
+                            </label>
+                        </div>
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(3)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="3">
+                                Waste removal
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-6">
+                    <button onclick="previousQuestion()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors" id="prevBtn" disabled>Previous</button>
+                    <button onclick="nextQuestion()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors" id="nextBtn">Next Question</button>
+                </div>
+
+                <div id="explanationContainer" class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+                    <h4 class="font-semibold text-blue-900 mb-2">Explanation:</h4>
+                    <p class="text-blue-800" id="explanationText"></p>
+                </div>
+            </div>
+
+            <!-- Quiz Results -->
+            <div id="quizResults" class="bg-white rounded-lg shadow-md p-6 hidden">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🎉</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Quiz Complete!</h2>
+                    <div class="text-4xl font-bold text-blue-600 mb-2" id="finalScore">85%</div>
+                    <p class="text-gray-600 mb-6">Great job! You're making excellent progress.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="text-2xl text-green-600 mb-2">✅</div>
+                            <div class="text-lg font-semibold text-green-800" id="correctAnswers">8</div>
+                            <div class="text-sm text-green-600">Correct</div>
+                        </div>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="text-2xl text-red-600 mb-2">❌</div>
+                            <div class="text-lg font-semibold text-red-800" id="incorrectAnswers">2</div>
+                            <div class="text-sm text-red-600">Incorrect</div>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="text-2xl text-blue-600 mb-2">⏱️</div>
+                            <div class="text-lg font-semibold text-blue-800" id="timeSpent">5:32</div>
+                            <div class="text-sm text-blue-600">Time</div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center space-x-4">
+                        <button onclick="retakeQuiz()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">Retake Quiz</button>
+                        <button onclick="reviewAnswers()" class="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors">Review Answers</button>
+                        <button onclick="showSection('dashboard')" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors">Back to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div id="analytics" class="section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">📊 Learning Analytics</h1>
+            
+            <!-- Performance Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📈 Performance Trends</h2>
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📚 Subject Breakdown</h2>
+                    <canvas id="subjectChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Study Hours</p>
+                            <p class="text-2xl font-bold text-gray-900">42.5</p>
+                            <p class="text-xs text-green-600">+12% this week</p>
+                        </div>
+                        <div class="text-3xl">⏰</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Accuracy Rate</p>
+                            <p class="text-2xl font-bold text-gray-900">87%</p>
+                            <p class="text-xs text-green-600">+5% improvement</p>
+                        </div>
+                        <div class="text-3xl">🎯</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Topics Mastered</p>
+                            <p class="text-2xl font-bold text-gray-900">23</p>
+                            <p class="text-xs text-blue-600">3 new this week</p>
+                        </div>
+                        <div class="text-3xl">🏆</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Learning Velocity</p>
+                            <p class="text-2xl font-bold text-gray-900">Fast</p>
+                            <p class="text-xs text-green-600">Above average</p>
+                        </div>
+                        <div class="text-3xl">⚡</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Progress -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">📖 Subject Progress</h2>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Biology</span>
+                            <span class="text-sm text-gray-500">92%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-600 h-2 rounded-full progress-bar" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Chemistry</span>
+                            <span class="text-sm text-gray-500">78%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" style="width: 78%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Mathematics</span>
+                            <span class="text-sm text-gray-500">85%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-600 h-2 rounded-full progress-bar" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Physics</span>
+                            <span class="text-sm text-gray-500">65%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-600 h-2 rounded-full progress-bar" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Insights -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">💡 Learning Insights</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Peak Learning Time</h3>
+                        <p class="text-gray-600">You perform best between 2-4 PM with 94% average accuracy</p>
+                    </div>
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Strongest Subject</h3>
+                        <p class="text-gray-600">Biology shows consistent high performance across all topics</p>
+                    </div>
+                    <div class="border-l-4 border-yellow-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Improvement Area</h3>
+                        <p class="text-gray-600">Physics concepts need more practice - focus on mechanics</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Study Pattern</h3>
+                        <p class="text-gray-600">Short, frequent sessions (20-30 min) work best for you</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentSection = 'dashboard';
+        let currentQuestionIndex = 0;
+        let quizData = [];
+        let userAnswers = [];
+        let quizStartTime = null;
+
+        // Sample quiz data
+        const sampleQuizData = [
+            {
+                question: "What is the primary function of mitochondria in a cell?",
+                options: ["Protein synthesis", "Energy production (ATP synthesis)", "DNA replication", "Waste removal"],
+                correct: 1,
+                explanation: "Mitochondria are known as the powerhouses of the cell because they produce ATP through cellular respiration."
+            },
+            {
+                question: "Which process converts glucose into pyruvate?",
+                options: ["Krebs cycle", "Glycolysis", "Electron transport chain", "Photosynthesis"],
+                correct: 1,
+                explanation: "Glycolysis is the metabolic pathway that converts glucose into pyruvate, releasing energy in the process."
+            },
+            {
+                question: "What is the basic unit of heredity?",
+                options: ["Chromosome", "Gene", "DNA", "RNA"],
+                correct: 1,
+                explanation: "A gene is the basic unit of heredity, containing the instructions for making proteins."
+            }
+        ];
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.remove('hidden');
+            currentSection = sectionName;
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'bg-opacity-20');
+            });
+            event.target.classList.add('bg-white', 'bg-opacity-20');
+
+            // Initialize section-specific content
+            if (sectionName === 'analytics') {
+                setTimeout(initializeCharts, 100);
+            }
+        }
+
+        // File upload handling
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                showUploadProgress(files);
+            }
+        }
+
+        function showUploadProgress(files) {
+            const fileList = Array.from(files).map(file => `
+                <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="text-lg mr-3">📄</div>
+                        <div>
+                            <p class="font-medium text-gray-900">${file.name}</p>
+                            <p class="text-sm text-gray-600">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        </div>
+                    </div>
+                    <div class="text-green-600">✅ Ready</div>
+                </div>
+            `).join('');
+
+            const uploadArea = document.querySelector('.border-dashed');
+            uploadArea.innerHTML = `
+                <div class="text-4xl mb-4">📚</div>
+                <p class="text-lg font-medium text-gray-900 mb-4">${files.length} file(s) selected</p>
+                <div class="space-y-2 mb-4">${fileList}</div>
+                <button onclick="document.getElementById('fileInput').click()" class="text-blue-600 hover:text-blue-800">Add more files</button>
+            `;
+        }
+
+        function processUploadedFiles() {
+            // Simulate file processing
+            const processingModal = document.createElement('div');
+            processingModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            processingModal.innerHTML = `
+                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🔄</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Processing Materials...</h3>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" id="processingProgress" style="width: 0%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600" id="processingStatus">Extracting text content...</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(processingModal);
+
+            // Simulate processing steps
+            const steps = [
+                { progress: 20, status: "Extracting text content..." },
+                { progress: 40, status: "Identifying key concepts..." },
+                { progress: 60, status: "Generating quiz questions..." },
+                { progress: 80, status: "Creating flashcards..." },
+                { progress: 100, status: "Processing complete!" }
+            ];
+
+            let stepIndex = 0;
+            const processInterval = setInterval(() => {
+                if (stepIndex < steps.length) {
+                    const step = steps[stepIndex];
+                    document.getElementById('processingProgress').style.width = step.progress + '%';
+                    document.getElementById('processingStatus').textContent = step.status;
+                    stepIndex++;
+                } else {
+                    clearInterval(processInterval);
+                    setTimeout(() => {
+                        document.body.removeChild(processingModal);
+                        showSuccessMessage();
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        function showSuccessMessage() {
+            const successModal = document.createElement('div');
+            successModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            successModal.innerHTML = `
+                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">✅</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Materials Processed Successfully!</h3>
+                        <p class="text-gray-600 mb-6">Generated 8 quiz questions, 15 flashcards, and extracted 23 key concepts.</p>
+                        <button onclick="document.body.removeChild(this.closest('.fixed'))" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">Continue</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(successModal);
+        }
+
+        // Study tools
+        function startQuizMode() {
+            quizData = [...sampleQuizData];
+            userAnswers = new Array(quizData.length).fill(null);
+            currentQuestionIndex = 0;
+            quizStartTime = new Date();
+            
+            document.getElementById('quizInterface').classList.remove('hidden');
+            document.getElementById('quizResults').classList.add('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const question = quizData[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = quizData.length;
+            
+            const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            document.getElementById('quizProgress').style.width = progress + '%';
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = question.options.map((option, index) => `
+                <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(${index})">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="answer" class="mr-3" value="${index}">
+                        ${option}
+                    </label>
+                </div>
+            `).join('');
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('nextBtn').textContent = currentQuestionIndex === quizData.length - 1 ? 'Finish Quiz' : 'Next Question';
+            
+            // Hide explanation
+            document.getElementById('explanationContainer').classList.add('hidden');
+            
+            // Restore previous answer if exists
+            if (userAnswers[currentQuestionIndex] !== null) {
+                selectOption(userAnswers[currentQuestionIndex]);
+            }
+        }
+
+        function selectOption(optionIndex) {
+            // Clear previous selections
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected');
+                option.querySelector('input').checked = false;
+            });
+            
+            // Select current option
+            const selectedOption = document.querySelectorAll('.quiz-option')[optionIndex];
+            selectedOption.classList.add('selected');
+            selectedOption.querySelector('input').checked = true;
+            
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Show explanation after selection
+            setTimeout(() => {
+                showExplanation();
+            }, 500);
+        }
+
+        function showExplanation() {
+            const question = quizData[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            
+            // Highlight correct/incorrect answers
+            document.querySelectorAll('.quiz-option').forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === userAnswer && index !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Show explanation
+            document.getElementById('explanationText').textContent = question.explanation;
+            document.getElementById('explanationContainer').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            const correctAnswers = userAnswers.reduce((count, answer, index) => {
+                return count + (answer === quizData[index].correct ? 1 : 0);
+            }, 0);
+            
+            const score = Math.round((correctAnswers / quizData.length) * 100);
+            const timeSpent = Math.floor((new Date() - quizStartTime) / 1000);
+            const minutes = Math.floor(timeSpent / 60);
+            const seconds = timeSpent % 60;
+            
+            document.getElementById('finalScore').textContent = score + '%';
+            document.getElementById('correctAnswers').textContent = correctAnswers;
+            document.getElementById('incorrectAnswers').textContent = quizData.length - correctAnswers;
+            document.getElementById('timeSpent').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('quizResults').classList.remove('hidden');
+        }
+
+        function retakeQuiz() {
+            startQuizMode();
+        }
+
+        function reviewAnswers() {
+            // Implementation for reviewing answers
+            alert('Review functionality would show detailed breakdown of each question and answer.');
+        }
+
+        function startFlashcards() {
+            alert('Flashcard mode would display interactive cards with key concepts and definitions.');
+        }
+
+        function startSummaryReview() {
+            alert('Summary review would show condensed notes and key points from your materials.');
+        }
+
+        function startRecommendedStudy(subject) {
+            alert(`Starting recommended study session for ${subject}. This would launch targeted practice based on your weak areas.`);
+        }
+
+        // Analytics charts
+        function initializeCharts() {
+            // Performance trend chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                    datasets: [{
+                        label: 'Quiz Scores (%)',
+                        data: [65, 72, 78, 85, 82, 87],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Subject breakdown chart
+            const subjectCtx = document.getElementById('subjectChart').getContext('2d');
+            new Chart(subjectCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Biology', 'Chemistry', 'Mathematics', 'Physics'],
+                    datasets: [{
+                        data: [92, 78, 85, 65],
+                        backgroundColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(59, 130, 246)',
+                            'rgb(147, 51, 234)',
+                            'rgb(249, 115, 22)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e570ee35679f4d',t:'MTc1Nzc0MzQwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdaptLearn - Adaptive Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .quiz-option { transition: all 0.2s ease; }
+        .quiz-option:hover { background-color: #f3f4f6; }
+        .quiz-option.selected { background-color: #dbeafe; border-color: #3b82f6; }
+        .quiz-option.correct { background-color: #dcfce7; border-color: #16a34a; }
+        .quiz-option.incorrect { background-color: #fee2e2; border-color: #dc2626; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold">🧠 AdaptLearn</div>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="showSection('dashboard')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Dashboard</button>
+                    <button onclick="showSection('upload')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Upload Materials</button>
+                    <button onclick="showSection('study')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Study Tools</button>
+                    <button onclick="showSection('analytics')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">Analytics</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">Welcome back! Ready to learn?</h1>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">📚</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Study Materials</p>
+                            <p class="text-2xl font-bold text-gray-900" id="materialCount">12</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">🎯</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Quizzes Completed</p>
+                            <p class="text-2xl font-bold text-gray-900" id="quizCount">28</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">⚡</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Study Streak</p>
+                            <p class="text-2xl font-bold text-gray-900" id="streakCount">7 days</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="text-3xl">📈</div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Average Score</p>
+                            <p class="text-2xl font-bold text-gray-900" id="avgScore">85%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Recommendations -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">🤖 AI Study Recommendations</h2>
+                <div class="space-y-4" id="recommendations">
+                    <div class="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="text-2xl mr-4">🔬</div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">Focus on Chemistry - Organic Compounds</h3>
+                            <p class="text-sm text-gray-600">Your recent quiz showed 65% accuracy. Recommended study time: 30 minutes</p>
+                        </div>
+                        <button onclick="startRecommendedStudy('chemistry')" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">Start Study</button>
+                    </div>
+                    <div class="flex items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                        <div class="text-2xl mr-4">📐</div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">Review Mathematics - Calculus Integration</h3>
+                            <p class="text-sm text-gray-600">Great progress! Quick review recommended to maintain mastery</p>
+                        </div>
+                        <button onclick="startRecommendedStudy('math')" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">Quick Review</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">📋 Recent Activity</h2>
+                <div class="space-y-3" id="recentActivity">
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div class="flex items-center">
+                            <div class="text-lg mr-3">✅</div>
+                            <div>
+                                <p class="font-medium text-gray-900">Completed Biology Quiz - Cell Structure</p>
+                                <p class="text-sm text-gray-600">2 hours ago • Score: 92%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div class="flex items-center">
+                            <div class="text-lg mr-3">📖</div>
+                            <div>
+                                <p class="font-medium text-gray-900">Uploaded Physics Notes - Thermodynamics</p>
+                                <p class="text-sm text-gray-600">1 day ago • 15 pages processed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2">
+                        <div class="flex items-center">
+                            <div class="text-lg mr-3">🎯</div>
+                            <div>
+                                <p class="font-medium text-gray-900">Generated Chemistry Quiz</p>
+                                <p class="text-sm text-gray-600">2 days ago • 10 questions created</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Materials Section -->
+    <div id="upload" class="section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">📚 Upload Study Materials</h1>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Add New Materials</h2>
+                
+                <!-- File Upload Area -->
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                    <div class="text-6xl mb-4">📄</div>
+                    <p class="text-lg font-medium text-gray-900 mb-2">Drop files here or click to upload</p>
+                    <p class="text-sm text-gray-600">Supports PDF, DOCX, TXT, and image files</p>
+                    <input type="file" id="fileInput" class="hidden" multiple accept=".pdf,.docx,.txt,.jpg,.jpeg,.png" onchange="handleFileUpload(event)">
+                </div>
+
+                <!-- Processing Options -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-900 mb-2">📝 Content Extraction</h3>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Extract key concepts
+                        </label>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Identify important terms
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" checked> Create summary notes
+                        </label>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-900 mb-2">🎯 Auto-Generate</h3>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Practice quizzes
+                        </label>
+                        <label class="flex items-center mb-2">
+                            <input type="checkbox" class="mr-2" checked> Flashcards
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2"> Study schedule
+                        </label>
+                    </div>
+                </div>
+
+                <button onclick="processUploadedFiles()" class="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium">
+                    Process Materials
+                </button>
+            </div>
+
+            <!-- Uploaded Materials List -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">📋 Your Materials</h2>
+                <div class="space-y-3" id="materialsList">
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="text-2xl mr-4">📘</div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Biology Textbook - Chapter 5</h3>
+                                <p class="text-sm text-gray-600">Uploaded 2 days ago • 25 pages • 3 quizzes generated</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="viewMaterial('bio-ch5')" class="text-blue-600 hover:text-blue-800">View</button>
+                            <button onclick="generateQuiz('bio-ch5')" class="text-green-600 hover:text-green-800">Quiz</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="text-2xl mr-4">🧪</div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Chemistry Lab Notes</h3>
+                                <p class="text-sm text-gray-600">Uploaded 1 week ago • 12 pages • 2 quizzes generated</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="viewMaterial('chem-lab')" class="text-blue-600 hover:text-blue-800">View</button>
+                            <button onclick="generateQuiz('chem-lab')" class="text-green-600 hover:text-green-800">Quiz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Tools Section -->
+    <div id="study" class="section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">🎯 Study Tools</h1>
+            
+            <!-- Study Mode Selection -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="startQuizMode()">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🧠</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Adaptive Quiz</h3>
+                        <p class="text-sm text-gray-600">AI-generated questions based on your progress</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="startFlashcards()">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🃏</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Flashcards</h3>
+                        <p class="text-sm text-gray-600">Review key concepts and definitions</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="startSummaryReview()">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">📝</div>
+                        <h3 class="text-lg font-semibnel text-gray-900 mb-2">Summary Review</h3>
+                        <p class="text-sm text-gray-600">Quick overview of important topics</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Interface -->
+            <div id="quizInterface" class="bg-white rounded-lg shadow-md p-6 hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">Adaptive Quiz - Biology</h2>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span></span>
+                        <div class="w-32 bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" id="quizProgress" style="width: 10%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="questionContainer">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4" id="questionText">What is the primary function of mitochondria in a cell?</h3>
+                    <div class="space-y-3" id="optionsContainer">
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(0)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="0">
+                                Protein synthesis
+                            </label>
+                        </div>
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(1)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="1">
+                                Energy production (ATP synthesis)
+                            </label>
+                        </div>
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(2)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="2">
+                                DNA replication
+                            </label>
+                        </div>
+                        <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(3)">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="answer" class="mr-3" value="3">
+                                Waste removal
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-6">
+                    <button onclick="previousQuestion()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors" id="prevBtn" disabled>Previous</button>
+                    <button onclick="nextQuestion()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors" id="nextBtn">Next Question</button>
+                </div>
+
+                <div id="explanationContainer" class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+                    <h4 class="font-semibold text-blue-900 mb-2">Explanation:</h4>
+                    <p class="text-blue-800" id="explanationText"></p>
+                </div>
+            </div>
+
+            <!-- Quiz Results -->
+            <div id="quizResults" class="bg-white rounded-lg shadow-md p-6 hidden">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🎉</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Quiz Complete!</h2>
+                    <div class="text-4xl font-bold text-blue-600 mb-2" id="finalScore">85%</div>
+                    <p class="text-gray-600 mb-6">Great job! You're making excellent progress.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="text-2xl text-green-600 mb-2">✅</div>
+                            <div class="text-lg font-semibold text-green-800" id="correctAnswers">8</div>
+                            <div class="text-sm text-green-600">Correct</div>
+                        </div>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="text-2xl text-red-600 mb-2">❌</div>
+                            <div class="text-lg font-semibold text-red-800" id="incorrectAnswers">2</div>
+                            <div class="text-sm text-red-600">Incorrect</div>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="text-2xl text-blue-600 mb-2">⏱️</div>
+                            <div class="text-lg font-semibold text-blue-800" id="timeSpent">5:32</div>
+                            <div class="text-sm text-blue-600">Time</div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center space-x-4">
+                        <button onclick="retakeQuiz()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">Retake Quiz</button>
+                        <button onclick="reviewAnswers()" class="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors">Review Answers</button>
+                        <button onclick="showSection('dashboard')" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors">Back to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div id="analytics" class="section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="fade-in">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">📊 Learning Analytics</h1>
+            
+            <!-- Performance Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📈 Performance Trends</h2>
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📚 Subject Breakdown</h2>
+                    <canvas id="subjectChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Study Hours</p>
+                            <p class="text-2xl font-bold text-gray-900">42.5</p>
+                            <p class="text-xs text-green-600">+12% this week</p>
+                        </div>
+                        <div class="text-3xl">⏰</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Accuracy Rate</p>
+                            <p class="text-2xl font-bold text-gray-900">87%</p>
+                            <p class="text-xs text-green-600">+5% improvement</p>
+                        </div>
+                        <div class="text-3xl">🎯</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Topics Mastered</p>
+                            <p class="text-2xl font-bold text-gray-900">23</p>
+                            <p class="text-xs text-blue-600">3 new this week</p>
+                        </div>
+                        <div class="text-3xl">🏆</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Learning Velocity</p>
+                            <p class="text-2xl font-bold text-gray-900">Fast</p>
+                            <p class="text-xs text-green-600">Above average</p>
+                        </div>
+                        <div class="text-3xl">⚡</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Progress -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">📖 Subject Progress</h2>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Biology</span>
+                            <span class="text-sm text-gray-500">92%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-600 h-2 rounded-full progress-bar" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Chemistry</span>
+                            <span class="text-sm text-gray-500">78%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" style="width: 78%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Mathematics</span>
+                            <span class="text-sm text-gray-500">85%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-600 h-2 rounded-full progress-bar" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Physics</span>
+                            <span class="text-sm text-gray-500">65%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-600 h-2 rounded-full progress-bar" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Insights -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">💡 Learning Insights</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Peak Learning Time</h3>
+                        <p class="text-gray-600">You perform best between 2-4 PM with 94% average accuracy</p>
+                    </div>
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Strongest Subject</h3>
+                        <p class="text-gray-600">Biology shows consistent high performance across all topics</p>
+                    </div>
+                    <div class="border-l-4 border-yellow-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Improvement Area</h3>
+                        <p class="text-gray-600">Physics concepts need more practice - focus on mechanics</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <h3 class="font-semibold text-gray-900">Study Pattern</h3>
+                        <p class="text-gray-600">Short, frequent sessions (20-30 min) work best for you</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentSection = 'dashboard';
+        let currentQuestionIndex = 0;
+        let quizData = [];
+        let userAnswers = [];
+        let quizStartTime = null;
+
+        // Sample quiz data
+        const sampleQuizData = [
+            {
+                question: "What is the primary function of mitochondria in a cell?",
+                options: ["Protein synthesis", "Energy production (ATP synthesis)", "DNA replication", "Waste removal"],
+                correct: 1,
+                explanation: "Mitochondria are known as the powerhouses of the cell because they produce ATP through cellular respiration."
+            },
+            {
+                question: "Which process converts glucose into pyruvate?",
+                options: ["Krebs cycle", "Glycolysis", "Electron transport chain", "Photosynthesis"],
+                correct: 1,
+                explanation: "Glycolysis is the metabolic pathway that converts glucose into pyruvate, releasing energy in the process."
+            },
+            {
+                question: "What is the basic unit of heredity?",
+                options: ["Chromosome", "Gene", "DNA", "RNA"],
+                correct: 1,
+                explanation: "A gene is the basic unit of heredity, containing the instructions for making proteins."
+            }
+        ];
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.remove('hidden');
+            currentSection = sectionName;
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'bg-opacity-20');
+            });
+            event.target.classList.add('bg-white', 'bg-opacity-20');
+
+            // Initialize section-specific content
+            if (sectionName === 'analytics') {
+                setTimeout(initializeCharts, 100);
+            }
+        }
+
+        // File upload handling
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                showUploadProgress(files);
+            }
+        }
+
+        function showUploadProgress(files) {
+            const fileList = Array.from(files).map(file => `
+                <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="text-lg mr-3">📄</div>
+                        <div>
+                            <p class="font-medium text-gray-900">${file.name}</p>
+                            <p class="text-sm text-gray-600">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        </div>
+                    </div>
+                    <div class="text-green-600">✅ Ready</div>
+                </div>
+            `).join('');
+
+            const uploadArea = document.querySelector('.border-dashed');
+            uploadArea.innerHTML = `
+                <div class="text-4xl mb-4">📚</div>
+                <p class="text-lg font-medium text-gray-900 mb-4">${files.length} file(s) selected</p>
+                <div class="space-y-2 mb-4">${fileList}</div>
+                <button onclick="document.getElementById('fileInput').click()" class="text-blue-600 hover:text-blue-800">Add more files</button>
+            `;
+        }
+
+        function processUploadedFiles() {
+            // Simulate file processing
+            const processingModal = document.createElement('div');
+            processingModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            processingModal.innerHTML = `
+                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🔄</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Processing Materials...</h3>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" id="processingProgress" style="width: 0%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600" id="processingStatus">Extracting text content...</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(processingModal);
+
+            // Simulate processing steps
+            const steps = [
+                { progress: 20, status: "Extracting text content..." },
+                { progress: 40, status: "Identifying key concepts..." },
+                { progress: 60, status: "Generating quiz questions..." },
+                { progress: 80, status: "Creating flashcards..." },
+                { progress: 100, status: "Processing complete!" }
+            ];
+
+            let stepIndex = 0;
+            const processInterval = setInterval(() => {
+                if (stepIndex < steps.length) {
+                    const step = steps[stepIndex];
+                    document.getElementById('processingProgress').style.width = step.progress + '%';
+                    document.getElementById('processingStatus').textContent = step.status;
+                    stepIndex++;
+                } else {
+                    clearInterval(processInterval);
+                    setTimeout(() => {
+                        document.body.removeChild(processingModal);
+                        showSuccessMessage();
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        function showSuccessMessage() {
+            const successModal = document.createElement('div');
+            successModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            successModal.innerHTML = `
+                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">✅</div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Materials Processed Successfully!</h3>
+                        <p class="text-gray-600 mb-6">Generated 8 quiz questions, 15 flashcards, and extracted 23 key concepts.</p>
+                        <button onclick="document.body.removeChild(this.closest('.fixed'))" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">Continue</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(successModal);
+        }
+
+        // Study tools
+        function startQuizMode() {
+            quizData = [...sampleQuizData];
+            userAnswers = new Array(quizData.length).fill(null);
+            currentQuestionIndex = 0;
+            quizStartTime = new Date();
+            
+            document.getElementById('quizInterface').classList.remove('hidden');
+            document.getElementById('quizResults').classList.add('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const question = quizData[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = quizData.length;
+            
+            const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            document.getElementById('quizProgress').style.width = progress + '%';
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = question.options.map((option, index) => `
+                <div class="quiz-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectOption(${index})">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="answer" class="mr-3" value="${index}">
+                        ${option}
+                    </label>
+                </div>
+            `).join('');
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('nextBtn').textContent = currentQuestionIndex === quizData.length - 1 ? 'Finish Quiz' : 'Next Question';
+            
+            // Hide explanation
+            document.getElementById('explanationContainer').classList.add('hidden');
+            
+            // Restore previous answer if exists
+            if (userAnswers[currentQuestionIndex] !== null) {
+                selectOption(userAnswers[currentQuestionIndex]);
+            }
+        }
+
+        function selectOption(optionIndex) {
+            // Clear previous selections
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected');
+                option.querySelector('input').checked = false;
+            });
+            
+            // Select current option
+            const selectedOption = document.querySelectorAll('.quiz-option')[optionIndex];
+            selectedOption.classList.add('selected');
+            selectedOption.querySelector('input').checked = true;
+            
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Show explanation after selection
+            setTimeout(() => {
+                showExplanation();
+            }, 500);
+        }
+
+        function showExplanation() {
+            const question = quizData[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            
+            // Highlight correct/incorrect answers
+            document.querySelectorAll('.quiz-option').forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === userAnswer && index !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Show explanation
+            document.getElementById('explanationText').textContent = question.explanation;
+            document.getElementById('explanationContainer').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            const correctAnswers = userAnswers.reduce((count, answer, index) => {
+                return count + (answer === quizData[index].correct ? 1 : 0);
+            }, 0);
+            
+            const score = Math.round((correctAnswers / quizData.length) * 100);
+            const timeSpent = Math.floor((new Date() - quizStartTime) / 1000);
+            const minutes = Math.floor(timeSpent / 60);
+            const seconds = timeSpent % 60;
+            
+            document.getElementById('finalScore').textContent = score + '%';
+            document.getElementById('correctAnswers').textContent = correctAnswers;
+            document.getElementById('incorrectAnswers').textContent = quizData.length - correctAnswers;
+            document.getElementById('timeSpent').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('quizResults').classList.remove('hidden');
+        }
+
+        function retakeQuiz() {
+            startQuizMode();
+        }
+
+        function reviewAnswers() {
+            // Implementation for reviewing answers
+            alert('Review functionality would show detailed breakdown of each question and answer.');
+        }
+
+        function startFlashcards() {
+            alert('Flashcard mode would display interactive cards with key concepts and definitions.');
+        }
+
+        function startSummaryReview() {
+            alert('Summary review would show condensed notes and key points from your materials.');
+        }
+
+        function startRecommendedStudy(subject) {
+            alert(`Starting recommended study session for ${subject}. This would launch targeted practice based on your weak areas.`);
+        }
+
+        // Analytics charts
+        function initializeCharts() {
+            // Performance trend chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                    datasets: [{
+                        label: 'Quiz Scores (%)',
+                        data: [65, 72, 78, 85, 82, 87],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Subject breakdown chart
+            const subjectCtx = document.getElementById('subjectChart').getContext('2d');
+            new Chart(subjectCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Biology', 'Chemistry', 'Mathematics', 'Physics'],
+                    datasets: [{
+                        data: [92, 78, 85, 65],
+                        backgroundColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(59, 130, 246)',
+                            'rgb(147, 51, 234)',
+                            'rgb(249, 115, 22)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e570ee35679f4d',t:'MTc1Nzc0MzQwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
